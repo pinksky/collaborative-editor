@@ -5,3 +5,26 @@ the models.py is use for sae to deploy, and if you want to deploy on other platf
 it is supported setting password to protect and markdown type render and it can embed any web like gist
 
 DEMO: http://doit.sinaapp.com
+
+
+    类似google doc，协同编辑就是能够让多人同时编辑同一份文档。用过版本控制的童鞋都知道，用版本控制的一个好处就是，可以方便的多人共同去做一个项目，但有时大家会对同一个文件的同一行进行了修改，这时merge代码的时候，就需要你去手工去解决冲突，而协同编辑同样也面临冲突的问题，这时候就是程序实时的自动去解决冲突了。
+
+    现在做协同编辑的已经有很多了，比如google doc，比如facebook面试喜欢用的collabedit，还有最近开源的towtruck这个东西，所以协同编辑还是深受大家欢迎的阿。这里有个英文的协同编辑的实现原理可以作参考。
+
+    协同编辑主要来说需要这么几个步骤
+    1、计算出当前用户的对文档作出的修改发送到服务器
+    2、对于所有用户对文档进行的修改进行合并以及冲突处理
+    3、将合并之后结果返回到前段
+    4、将光标移动到需要的位置 
+
+    对于第一个步骤而言，就是类似于linux中的diff操作，去比较当前的文档内容和之前的文档内容，来得到用户对于文档的修改。可以对两篇文档，用动态规划的方法，找到最长公共子序列，然后除去公共部分，剩下的就可以得到差异部分了，用动态规划的方法的时间复杂度为O(n^2)，网上还有些针对一些情况加速的论文比如《An Algorithm for Differential File Comparison》和《An O(ND) Difference Algorithm and Its Variations》。然后我发现google提供了很好的各种语言的实现，可以去很方便的调用。
+
+    得到差异发送到服务器我们就需要进行冲突的合并了，这个步骤叫做operational transformation。
+
+    比如用户A在文档字符数3的位置插入了test，用户B删掉了文档字符数5-7的位置，合并之后就变成了用户A在3的位置插入了test，用户B删掉了文档9-11的位置，这样对于所有用户的修改进行合并，再把所有修改告知所有的用户，来确保所有用户显示的内容始终是一样的。
+
+    最后就是移动光标的位置到相应的位置上，其实就是判断光标之前的操作都进行了什么，相应的去把光标前后移动就可以了。
+
+    基本上按照这个思路，利用comet技术等，多注意一些细节问题，就可以去自己实现一个类似google doc的在线协同编辑器了。
+    摘自：http://vaotoo.com/r/15013
+    
